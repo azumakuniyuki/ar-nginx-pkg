@@ -1,0 +1,16 @@
+---
+#              _             __      _       __     ___            _        
+#  _ __   __ _(_)_ __ __  __/ /_ __ | | ____ \ \   / / |_ __ _ ___| | _____ 
+# | '_ \ / _` | | '_ \\ \/ / || '_ \| |/ / _` | | / /| __/ _` / __| |/ / __|
+# | | | | (_| | | | | |>  <| || |_) |   < (_| | |/ / | || (_| \__ \   <\__ \
+# |_| |_|\__, |_|_| |_/_/\_\ || .__/|_|\_\__, | /_/   \__\__,_|___/_|\_\___/
+#        |___/              \_\_|        |___/_/                            
+# tasks file for ar-nginx-pkg
+- include: install-pkg.yml
+- include: make-config.yml
+- include: php-fastcgi.yml
+  when: nginx.php.fastcgi == true
+- include: build-local.yml
+- include: boot-script.yml
+- include: port-config.yml
+

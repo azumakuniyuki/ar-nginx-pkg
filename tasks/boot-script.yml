@@ -1,0 +1,20 @@
+---
+#              _             __      _       __     ___            _        
+#  _ __   __ _(_)_ __ __  __/ /_ __ | | ____ \ \   / / |_ __ _ ___| | _____ 
+# | '_ \ / _` | | '_ \\ \/ / || '_ \| |/ / _` | | / /| __/ _` / __| |/ / __|
+# | | | | (_| | | | | |>  <| || |_) |   < (_| | |/ / | || (_| \__ \   <\__ \
+# |_| |_|\__, |_|_| |_/_/\_\ || .__/|_|\_\__, | /_/   \__\__,_|___/_|\_\___/
+#        |___/              \_\_|        |___/_/                            
+# boot-script
+- name: boot-script | NGINX should be started
+  when: nginx.started == true
+  service:
+    name:    "nginx"
+    enabled: "yes"
+
+- name: boot-script | NGINX should be enabled
+  when: nginx.enabled == true
+  service:
+    name:  "nginx"
+    state: "started"
+

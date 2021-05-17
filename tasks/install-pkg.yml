@@ -1,0 +1,28 @@
+---
+#              _             __      _       __     ___            _        
+#  _ __   __ _(_)_ __ __  __/ /_ __ | | ____ \ \   / / |_ __ _ ___| | _____ 
+# | '_ \ / _` | | '_ \\ \/ / || '_ \| |/ / _` | | / /| __/ _` / __| |/ / __|
+# | | | | (_| | | | | |>  <| || |_) |   < (_| | |/ / | || (_| \__ \   <\__ \
+# |_| |_|\__, |_|_| |_/_/\_\ || .__/|_|\_\__, | /_/   \__\__,_|___/_|\_\___/
+#        |___/              \_\_|        |___/_/                            
+# install-pkg
+- block:
+    - name: install-pkg | Amazon | NGINX repository should be enabled
+      when: ansible_distribution == "Amazon"
+      shell: amazon-linux-extras list | grep nginx1 | grep enabled || amazon-linux-extras enable nginx1
+      changed_when: false
+
+    - name: install-pkg | RedHat | NGINX should be installed
+      yum:
+        name:  "nginx"
+        state: "present"
+
+    - name: install-pkg | RedHat | HTTP related packages should be installed
+      yum:
+        state: "present"
+        name:
+          - "curl"
+          - "wget"
+          - "cronolog"
+  when: ansible_os_family == "RedHat"
+

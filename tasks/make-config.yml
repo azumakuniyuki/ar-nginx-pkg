@@ -1,0 +1,47 @@
+---
+#              _             __      _       __     ___            _        
+#  _ __   __ _(_)_ __ __  __/ /_ __ | | ____ \ \   / / |_ __ _ ___| | _____ 
+# | '_ \ / _` | | '_ \\ \/ / || '_ \| |/ / _` | | / /| __/ _` / __| |/ / __|
+# | | | | (_| | | | | |>  <| || |_) |   < (_| | |/ / | || (_| \__ \   <\__ \
+# |_| |_|\__, |_|_| |_/_/\_\ || .__/|_|\_\__, | /_/   \__\__,_|___/_|\_\___/
+#        |___/              \_\_|        |___/_/                            
+# make-config
+- name: make-config | Deploy each config file in /etc/nginx/conf
+  notify: Restart NGINX
+  template:
+    src:  "etc/nginx/{{ item }}.j2"
+    dest: "{{ nginx.serverroot }}/{{ item }}"
+    mode: "0644"
+  with_items:
+    - "nginx.conf"
+    - "fastcgi.conf"
+
+- name: make-config | Deploy each config file in /etc/nginx/conf.d
+  notify: Restart NGINX
+  template:
+    src:  "{{ item }}"
+    dest: "{{ nginx.serverroot }}/conf.d/{{ item | basename | replace('.j2', '') }}"
+    mode: "0644"
+  with_fileglob: "templates{{ nginx.serverroot }}/conf.d/*.conf.j2"
+
+- name: make-config | Deploy each config file in /etc/nginx/default.d
+  notify: Restart NGINX
+  template:
+    src:  "{{ item }}"
+    dest: "{{ nginx.serverroot }}/default.d/{{ item | basename | replace('.j2', '') }}"
+    mode: "0644"
+  with_fileglob: "templates{{ nginx.serverroot }}/default.d/*.conf.j2"
+
+- name: make-config | Deploy log rotation file into /etc/logrotate.d
+  template:
+    src:  "{{ item }}"
+    dest: "/etc/logrotate.d/{{ item | basename | replace('.j2', '') }}"
+    mode: "0644"
+  with_fileglob: "templates/etc/logrotate.d/*.j2"
+  
+- name: make-config | Deploy Makefile into /var/log/nginx
+  template:
+    src:  "var/log/nginx/Makefile.j2"
+    dest: "/var/log/nginx/Makefile"
+    mode: "0644"
+

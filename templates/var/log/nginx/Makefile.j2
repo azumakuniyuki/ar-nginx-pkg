@@ -1,0 +1,38 @@
+# /var/log/httpd/Makefile
+#  __  __       _         __ _ _
+# |  \/  | __ _| | _____ / _(_) | ___
+# | |\/| |/ _` | |/ / _ \ |_| | |/ _ \
+# | |  | | (_| |   <  __/  _| | |  __/
+# |_|  |_|\__,_|_|\_\___|_| |_|_|\___|
+# -----------------------------------------------------------------------------
+WHATDAYAGO = 128
+FIND       = find
+RM         = rm -f
+MV         = mv
+CP         = cp
+
+.DEFAULT_GOAL = list
+
+# -----------------------------------------------------------------------------
+.PHONY: clean
+
+list:
+	@ls -laF
+
+compress:
+	@$(MAKE) clean-empty-log
+	@for v in `$(FIND) . -type f -name '*.log' -mtime +7`; do \
+		echo `basename $$v`; \
+		gzip $$v; \
+	done
+
+clean-empty-log:
+	find . -type f -name '*.log' -size 0 -mtime +7 -delete
+
+clean-old-log:
+	find . -type f -name '*.gz' -ctime +$(WHATDAYAGO) -delete
+
+clean:
+	$(MAKE) clean-empty-log
+	$(MAKE) clean-old-log
+
