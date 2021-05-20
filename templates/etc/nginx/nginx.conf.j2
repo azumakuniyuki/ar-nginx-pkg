@@ -31,7 +31,7 @@ worker_processes auto;
 #   default:  error_log logs/error.log error;
 #   context:  main, http, server, location
 # http://nginx.org/en/docs/ngx_core_module.html#error_log
-error_log /var/log/nginx/error.log;
+error_log {{ nginx.loggingdir }}/error.log;
 
 # Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
 include /usr/share/nginx/modules/*.conf;
@@ -92,7 +92,7 @@ http {
     #   http, server, location, if in location, limit_except
     #
     # http://nginx.org/en/docs/http/ngx_http_log_module.html
-    access_log  /var/log/nginx/access.log  main;
+    access_log  {{ nginx.loggingdir }}/access.log  main;
 
     # http://nginx.org/en/docs/http/ngx_http_core_module.html
     # copies data between one FD and other from within the kernel faster then read() + write()
@@ -128,7 +128,7 @@ http {
 
     # Load modular configuration files from the /etc/nginx/conf.d directory.
     # See http://nginx.org/en/docs/ngx_core_module.html#include for more information.
-    include /etc/nginx/conf.d/*.conf;
+    include {{ nginx.configroot }}/*.conf;
 
     server {
         listen       80;
@@ -161,7 +161,7 @@ http {
         }
 
         # Load configuration files for the default server block.
-        include /etc/nginx/default.d/*.conf;
+        include {{ nginx.serverroot }}/default.d/*.conf;
 
         # Defines the URI that will be shown for the specified errors. error_page directives are
         # inherited from the previous level only if there are no error_page directives defined on
@@ -173,17 +173,8 @@ http {
         }
     }
 
-    server {
-        listen 127.0.0.1;
-        server_name localhost;
-
-        location /nginx_status {
-            stub_status on;
-            access_log off;
-            allow 127.0.0.1;
-            deny all;
-        }
-    }
+    # Load configuration files for each virtual host
+    include {{ nginx.serverroot }}/vhost.d/*.conf;
 
 # Settings for a TLS enabled server.
 #
@@ -201,7 +192,7 @@ http {
 #        ssl_prefer_server_ciphers on;
 #
 #        # Load configuration files for the default server block.
-#        include /etc/nginx/default.d/*.conf;
+#        include {{ nginx.serverroot }}/default.d/*.conf;
 #
 #        error_page 404 /404.html;
 #            location = /40x.html {

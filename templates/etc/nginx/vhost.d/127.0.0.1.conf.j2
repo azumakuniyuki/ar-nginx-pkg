@@ -1,0 +1,19 @@
+# {{ nginx.serverroot }}/vhost.d/127.0.0.1.conf
+#  _ ____ _____ ___   ___   _ 
+# / |___ \___  / _ \ / _ \ / |
+# | | __) | / / | | | | | || |
+# | |/ __/ / /| |_| | |_| || |
+# |_|_____/_/(_)___(_)___(_)_|
+#                             
+server {
+    listen 127.0.0.1;
+    server_name localhost;
+
+    location /nginx_status {
+        stub_status on;
+        access_log off;
+        allow 127.0.0.1;
+        deny all;
+    }
+}
+

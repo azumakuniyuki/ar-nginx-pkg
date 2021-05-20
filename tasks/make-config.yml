@@ -16,6 +16,22 @@
     - "nginx.conf"
     - "fastcgi.conf"
 
+- name: make-config | {{ nginx.serverroot }}/vhost.d directory should be created
+  file:
+    path:  "{{ nginx.serverroot }}/vhost.d"
+    owner: "root"
+    group: "root"
+    mode:  "0755"
+    state: "directory"
+
+- name: make-config | {{ nginx.serverroot }}/vhost.d/*.conf should be deployed
+  notify: Restart NGINX
+  template:
+    src:  "{{ item }}"
+    dest  "etc/nginx/vhost.d/{{ item | basename | replace('.j2', '') }}"
+    mode: "0644"
+  with_fileglob: "templates{{ nginx.serverroot }}/vhost.d/*.conf.j2"
+
 - name: make-config | Deploy each config file in /etc/nginx/conf.d
   notify: Restart NGINX
   template:

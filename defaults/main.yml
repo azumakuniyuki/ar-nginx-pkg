@@ -11,13 +11,15 @@ nginx:
   started: true
   serverroot: "/etc/nginx"
   configroot: "/etc/nginx/conf.d"
-  servername: "neko1.example.jp"
+  loggingdir: "/var/log/nginx"
   conf:
+    servername:   "neko1.example.jp"
     documentroot: "/usr/share/nginx/html"
   php:
     fastcgi: true
     version: "8.0"
     confdir: "/etc/php-fpm.d"
+    sockdir: "/run/php-fpm"
     logsdir: "/var/log/nginx"
   user:
     username: "nginx"
