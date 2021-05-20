@@ -28,7 +28,7 @@
   notify: Restart NGINX
   template:
     src:  "{{ item }}"
-    dest: "etc/nginx/vhost.d/{{ item | basename | replace('.j2', '') }}"
+    dest: "/etc/nginx/vhost.d/{{ item | basename | replace('.j2', '') }}"
     mode: "0644"
   with_fileglob: "templates{{ nginx.serverroot }}/vhost.d/*.conf.j2"
 
