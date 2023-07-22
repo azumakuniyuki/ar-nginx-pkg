@@ -12,6 +12,7 @@ nginx:
   serverroot: "/etc/nginx"
   configroot: "/etc/nginx/conf.d"
   loggingdir: "/var/log/nginx"
+  lecertroot: " /etc/letsencrypt"
   conf:
     servername:   "neko1.example.jp"
     documentroot: "/usr/share/nginx/html"
