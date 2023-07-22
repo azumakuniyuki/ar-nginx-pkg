@@ -37,3 +37,21 @@
         - "443"
   when: ansible_system == "Linux"
     
+- block:
+  - name: port-config | Debian | /etc/ufw/applications.d/nginx should be deployed
+    notify: Restart ufw
+    template:
+      src:  "etc/ufw/applications.d/nginx.j2"
+      dest: "/etc/ufw/applications.d/nginx"
+      mode: "0644"
+
+  - name: port-config | Debian | Allow 80 and 443 for NGINX
+    ufw:
+      rule: "allow"
+      name: "{{ item }}"
+    with_items:
+      - "Nginx HTTP"
+      - "Nginx HTTPS"
+      - "Nginx Full"
+  when: ansible_os_family == "Debian"
+

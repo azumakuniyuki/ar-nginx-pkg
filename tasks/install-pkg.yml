@@ -21,8 +21,25 @@
       yum:
         state: "present"
         name:
+          - "certbot"
+          - "cronolog"
           - "curl"
           - "wget"
-          - "cronolog"
   when: ansible_os_family == "RedHat"
+
+- block:
+    - name: install-pkg | Debian | NGINX should be installed
+      apt:
+        name:  "nginx"
+        state: "present"
+
+    - name: install-pkg | Debian | HTTP related packages should be installed
+      apt:
+        state: "present"
+        name:
+          - "certbot"
+          - "cronolog"
+          - "curl"
+          - "wget"
+  when: ansible_os_family == "Debian"
 

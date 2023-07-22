@@ -40,7 +40,7 @@ events {
     # determines how much clients will be served per worker
     # max clients = worker_connections * worker_processes
     # max clients is also limited by the number of socket connections available on the system (~64k)
-    worker_connections 1024;
+    worker_connections 128;
 
     # optmized to serve many clients with each thread, essential for linux
     #use epoll;
@@ -53,6 +53,9 @@ http {
     include         mime.types;
     default_type    application/octet-stream;
     server_tokens   off;
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
 
     # Specifies log format.
     # The log format can contain common variables, and variables that exist only
@@ -129,6 +132,8 @@ http {
     # Load modular configuration files from the /etc/nginx/conf.d directory.
     # See http://nginx.org/en/docs/ngx_core_module.html#include for more information.
     include {{ nginx.configroot }}/*.conf;
+    include {{ nginx.serverroot }}/vhost.d/*.conf;
+    include {{ nginx.serverroot }}/sites-enabled/*.conf;
 
     server {
         listen       80;
@@ -172,9 +177,6 @@ http {
             root   {{ nginx.conf.documentroot }}/html;
         }
     }
-
-    # Load configuration files for each virtual host
-    include {{ nginx.serverroot }}/vhost.d/*.conf;
 
 # Settings for a TLS enabled server.
 #

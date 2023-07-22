@@ -15,38 +15,12 @@
   with_items:
     - "nginx.conf"
     - "fastcgi.conf"
-
-- name: make-config | {{ nginx.serverroot }}/vhost.d directory should be created
-  file:
-    path:  "{{ nginx.serverroot }}/vhost.d"
-    owner: "root"
-    group: "root"
-    mode:  "0755"
-    state: "directory"
-
-- name: make-config | {{ nginx.serverroot }}/vhost.d/*.conf should be deployed
-  notify: Restart NGINX
+    
+- name: make-config | Deploy Makefile into /var/log/nginx
   template:
-    src:  "{{ item }}"
-    dest: "/etc/nginx/vhost.d/{{ item | basename | replace('.j2', '') }}"
+    src:  "var/log/nginx/Makefile.j2"
+    dest: "/var/log/nginx/Makefile"
     mode: "0644"
-  with_fileglob: "templates{{ nginx.serverroot }}/vhost.d/*.conf.j2"
-
-- name: make-config | Deploy each config file in /etc/nginx/conf.d
-  notify: Restart NGINX
-  template:
-    src:  "{{ item }}"
-    dest: "{{ nginx.serverroot }}/conf.d/{{ item | basename | replace('.j2', '') }}"
-    mode: "0644"
-  with_fileglob: "templates{{ nginx.serverroot }}/conf.d/*.conf.j2"
-
-- name: make-config | Deploy each config file in /etc/nginx/default.d
-  notify: Restart NGINX
-  template:
-    src:  "{{ item }}"
-    dest: "{{ nginx.serverroot }}/default.d/{{ item | basename | replace('.j2', '') }}"
-    mode: "0644"
-  with_fileglob: "templates{{ nginx.serverroot }}/default.d/*.conf.j2"
 
 - name: make-config | Deploy log rotation file into /etc/logrotate.d
   template:
@@ -54,10 +28,48 @@
     dest: "/etc/logrotate.d/{{ item | basename | replace('.j2', '') }}"
     mode: "0644"
   with_fileglob: "templates/etc/logrotate.d/*.j2"
-  
-- name: make-config | Deploy Makefile into /var/log/nginx
-  template:
-    src:  "var/log/nginx/Makefile.j2"
-    dest: "/var/log/nginx/Makefile"
-    mode: "0644"
 
+- block:
+  - name: make-config | RedHat | {{ nginx.serverroot }}/vhost.d directory should be created
+    file:
+      path:  "{{ nginx.serverroot }}/vhost.d"
+      owner: "root"
+      group: "root"
+      mode:  "0755"
+      state: "directory"
+
+  - name: make-config | RedHat | {{ nginx.serverroot }}/vhost.d/*.conf should be deployed
+    notify: Restart NGINX
+    template:
+      src:  "{{ item }}"
+      dest: "/etc/nginx/vhost.d/{{ item | basename | replace('.j2', '') }}"
+      mode: "0644"
+    with_fileglob: "templates{{ nginx.serverroot }}/vhost.d/*.conf.j2"
+
+  - name: make-config | RedHat | Deploy each config file in /etc/nginx/conf.d
+    notify: Restart NGINX
+    template:
+      src:  "{{ item }}"
+      dest: "{{ nginx.serverroot }}/conf.d/{{ item | basename | replace('.j2', '') }}"
+      mode: "0644"
+    with_fileglob: "templates{{ nginx.serverroot }}/conf.d/*.conf.j2"
+
+  - name: make-config | RedHat | Deploy each config file in /etc/nginx/default.d
+    notify: Restart NGINX
+    template:
+      src:  "{{ item }}"
+      dest: "{{ nginx.serverroot }}/default.d/{{ item | basename | replace('.j2', '') }}"
+      mode: "0644"
+    with_fileglob: "templates{{ nginx.serverroot }}/default.d/*.conf.j2"
+  when: ansible_os_family == "RedHat"
+
+- block:
+  - name: make-config | Debian | Files in site-available should be deployed
+    notify: Restart NGINX
+    template:
+      src:  "{{ item }}"
+      dest: "/etc/nginx/site-available/{{ item | basename | replace('.j2', '') }}"
+      mode: "0644"
+    with_fileglob: "templates{{ nginx.serverroot }}/site-available/*.j2"
+
+  when: ansible_os_family == "Debian"

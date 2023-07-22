@@ -21,6 +21,7 @@ nginx:
     confdir: "/etc/php-fpm.d"
     sockdir: "/run/php-fpm"
     logsdir: "/var/log/nginx"
+# Redhat
   user:
     username: "nginx"
     uid: 995
@@ -28,4 +29,12 @@ nginx:
     group: "nginx"
     shell: "/sbin/nolgin"
     comment: "NGINX"
+# Debian 
+# user:
+#   username: "www-data"
+#   uid: 33
+#   gid: 33
+#   group: "www-data"
+#   shell: "/usr/sbin/nolgin"
+#   comment: "NGINX"
 
